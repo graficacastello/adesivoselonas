@@ -565,6 +565,104 @@
         .delete-btn:hover {
             transform: scale(1.05);
         }
+
+        /* Novos estilos para opções de lona/vinil */
+        .material-options-container {
+            margin: 10px 0 15px 0;
+            padding: 10px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .material-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .material-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .material-option input[type="checkbox"] {
+            opacity: 0;
+            position: absolute;
+        }
+
+        .material-option .option-checkmark {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #4CAF50;
+            border-radius: 4px;
+            margin-right: 8px;
+            position: relative;
+            transition: all 0.2s ease;
+            background-color: white;
+        }
+
+        .material-option:hover .option-checkmark {
+            border-color: #2E7D32;
+        }
+
+        .material-option input[type="checkbox"]:checked + .option-checkmark {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .material-option input[type="checkbox"]:checked + .option-checkmark::after {
+            content: "✓";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .material-option-label {
+            font-size: 13px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .material-option-price {
+            font-size: 12px;
+            color: #666;
+            margin-left: 5px;
+        }
+
+        .multiple-total {
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .multiple-total-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .multiple-total-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .warning-message {
+            color: #f44336;
+            font-size: 12px;
+            margin-top: 5px;
+            font-weight: 500;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet">
 </head>
@@ -631,10 +729,19 @@
     <div class="main-container">
         <div class="material-container">
             <h1>Selecione o Material</h1>
-            <div class="material-buttons" id="materialButtons"><button>Adesivo de Papel</button><button>Adesivo de Vinil Laser Brilho</button><button>Adesivo de Vinil Laser Fosco</button><button>Adesivo de Vinil Transparente</button><button>Lona / Banner</button><button>Vinil m²</button><button>Citru m²</button><button>Tecido Oxford</button><button class="selected">Adesivo Jateado</button><button class="">Vinil Automotivo</button></div>
+            <div class="material-buttons" id="materialButtons"></div>
         </div>
         <div class="container form-container">
             <h1>Adesivos / Lona</h1>
+            
+            <div id="materialOptionsContainer" style="display: none;">
+                <h2>Selecione o Tipo (pode escolher um ou ambos)</h2>
+                <div class="material-options-container" id="materialOptions"></div>
+                <div id="materialWarning" class="warning-message" style="display: none;">
+                    ⚠️ Selecione pelo menos uma opção para calcular o orçamento.
+                </div>
+            </div>
+            
             <div class="measurement-row">
                 <div class="measurement-group">
                     <label for="quantidade">Quantidade de unidades:</label>
@@ -752,16 +859,41 @@
         const ADMIN_PASSWORD = "admin123";
         const DEFAULT_CONFIG = {
             materials: [
-                { name: 'Adesivo de Papel', price: 60, minValue: 16, maxWidth: Infinity, active: true, blockQuantity: false },
-                { name: 'Adesivo de Vinil Laser Brilho', price: 70, minValue: 20, maxWidth: Infinity, active: true, blockQuantity: false },
-                { name: 'Adesivo de Vinil Laser Fosco', price: 70, minValue: 25, maxWidth: Infinity, active: true, blockQuantity: false },
-                { name: 'Adesivo de Vinil Transparente', price: 70, minValue: 30, maxWidth: Infinity, active: true, blockQuantity: false },
-                { name: 'Lona / Banner', price: 65, minValue: 40, maxWidth: 138, active: true, blockQuantity: true },
-                { name: 'Vinil m²', price: 50, minValue: 32, maxWidth: 139, active: true, blockQuantity: true },
-                { name: 'Citru m²', price: 90, minValue: 65, maxWidth: 141, active: true, blockQuantity: true },
-		{ name: 'Adesivo Jateado', price: 95, minValue: 65, maxWidth: 125, active: true, blockQuantity: true },
-		{ name: 'Vinil Automotivo', price: 120, minValue: 65, maxWidth: 141, active: true, blockQuantity: true },
-                { name: 'Tecido Oxford', price: 30, minValue: 60, maxWidth: 111, active: true, blockQuantity: true }
+                { name: 'Adesivo de Papel', price: 70, minValue: 20, maxWidth: 28, active: true, blockQuantity: false },
+                { name: 'Adesivo de Vinil Laser Brilho', price: 95, minValue: 20, maxWidth: 28, active: true, blockQuantity: false },
+                { name: 'Adesivo de Vinil Laser Fosco', price: 95, minValue: 20, maxWidth: 28, active: true, blockQuantity: false },
+                { name: 'Adesivo de Vinil Transparente', price: 120, minValue: 30, maxWidth: 28, active: true, blockQuantity: false },
+                { 
+                    name: 'Lona / Banner', 
+                    price: 65, 
+                    minValue: 40, 
+                    maxWidth: 138, 
+                    active: true, 
+                    blockQuantity: true,
+                    options: [
+                        { name: 'Lona Padrão', price: 65 },
+                        { name: 'Lona com proteção UV', price: 105 }
+                    ]
+                },
+                { 
+                    name: 'Vinil m²', 
+                    price: 80, 
+                    minValue: 35, 
+                    maxWidth: 130, 
+                    active: true, 
+                    blockQuantity: true,
+                    options: [
+                        { name: 'Vinil Padrão', price: 70 },
+                        { name: 'Vinil com proteção UV', price: 120 }
+                    ]
+                },
+                { name: 'Citru m²', price: 90, minValue: 65, maxWidth: 130, active: true, blockQuantity: true },
+                { name: 'Adesivo Jateado', price: 135, minValue: 65, maxWidth: 120, active: true, blockQuantity: true },
+                { name: 'Vinil Automotivo', price: 185, minValue: 65, maxWidth: 120, active: true, blockQuantity: true },
+                { name: 'Tecido Oxford', price: 75, minValue: 60, maxWidth: 140, active: true, blockQuantity: true },
+                { name: 'Outro 1', price: 100, minValue: 50, maxWidth: Infinity, active: true, blockQuantity: false },
+                { name: 'Outro 2', price: 150, minValue: 75, maxWidth: Infinity, active: true, blockQuantity: false },
+                { name: 'Outro 3', price: 200, minValue: 100, maxWidth: Infinity, active: true, blockQuantity: false }
             ],
             finishing: {
                 recorte: 0.003,
@@ -774,7 +906,10 @@
         };
 
         let config = JSON.parse(localStorage.getItem('config')) || DEFAULT_CONFIG;
-        let materialSelecionado = { valor: 0, nome: '' };
+        let materialSelecionado = { 
+            nome: '',
+            opcoesSelecionadas: [] // Agora armazena múltiplas opções
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             renderMaterialButtons();
@@ -789,34 +924,102 @@
                 if (material.active) {
                     const button = document.createElement('button');
                     button.textContent = material.name;
-                    button.onclick = () => selecionarMaterial(material.price, material.name);
+                    button.onclick = () => selecionarMaterial(material);
                     materialButtons.appendChild(button);
                 }
             });
         }
 
-        function selecionarMaterial(valor, nome) {
-            materialSelecionado.valor = valor;
-            materialSelecionado.nome = nome;
+        function selecionarMaterial(material) {
+    materialSelecionado.nome = material.name;
+    materialSelecionado.opcoesSelecionadas = []; // Resetar opções selecionadas
+    
+    // Verificar se o material tem opções (Lona/Banner ou Vinil m²)
+    const materialOptionsContainer = document.getElementById('materialOptionsContainer');
+    const materialOptions = document.getElementById('materialOptions');
+    const materialWarning = document.getElementById('materialWarning');
+    
+    if (material.options && material.options.length > 0) {
+        // Mostrar opções de material
+        materialOptionsContainer.style.display = 'block';
+        materialOptions.innerHTML = '';
+        materialWarning.style.display = 'none'; // Esconder aviso inicial
+        
+        material.options.forEach((option, index) => {
+            // MUDANÇA AQUI: de 'div' para 'label' para permitir o clique
+            const optionDiv = document.createElement('label'); 
+            optionDiv.className = 'material-option';
+            optionDiv.innerHTML = `
+                <input type="checkbox" name="materialOption" value="${option.name}" 
+                       data-price="${option.price}" 
+                       onchange="atualizarOpcaoMaterial(this, '${option.name}', ${option.price})">
+                <span class="option-checkmark"></span>
+                <span class="material-option-label">
+                    ${option.name} 
+                    <span class="material-option-price">(R$ ${option.price.toFixed(2)}/m²)</span>
+                </span>
+            `;
+            materialOptions.appendChild(optionDiv);
+        });
+        
+        // Selecionar a primeira opção por padrão
+        const firstCheckbox = materialOptions.querySelector('input[type="checkbox"]');
+        if (firstCheckbox) {
+            firstCheckbox.checked = true;
+            atualizarOpcaoMaterial(firstCheckbox, material.options[0].name, material.options[0].price);
+        }
+    } else {
+        // Esconder opções se o material não tiver
+        materialOptionsContainer.style.display = 'none';
+        // Para materiais sem opções, usar o preço base
+        materialSelecionado.opcoesSelecionadas.push({
+            nome: material.name,
+            preco: material.price
+        });
+    }
 
-            document.querySelectorAll('.material-buttons button').forEach(button => {
-                button.classList.remove('selected');
-            });
+    // Atualizar botões selecionados
+    document.querySelectorAll('.material-buttons button').forEach(button => {
+        button.classList.remove('selected');
+    });
+    // Garante que o destaque funcione mesmo em chamadas diretas
+    if(event && event.target) event.target.classList.add('selected');
 
-            event.target.classList.add('selected');
+    // Configurar quantidade
+    const quantidadeInput = document.getElementById('quantidade');
+    if (material.blockQuantity) {
+        quantidadeInput.value = 1;
+        quantidadeInput.disabled = true;
+    } else {
+        quantidadeInput.disabled = false;
+        quantidadeInput.value = '';
+    }
 
-            const quantidadeInput = document.getElementById('quantidade');
-            const material = config.materials.find(m => m.name === nome);
+    atualizarOpcoesAcabamento();
+        }
+
+        function atualizarOpcaoMaterial(checkbox, nome, preco) {
+            // Limpar array e reconstruir baseado em todos os checkboxes
+            materialSelecionado.opcoesSelecionadas = [];
             
-            if (material && material.blockQuantity) {
-                quantidadeInput.value = 1;
-                quantidadeInput.disabled = true;
-            } else {
-                quantidadeInput.disabled = false;
-                quantidadeInput.value = '';
+            // Coletar todas as opções marcadas
+            const checkboxes = document.querySelectorAll('#materialOptions input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const optionName = cb.value;
+                    const optionPrice = parseFloat(cb.getAttribute('data-price'));
+                    materialSelecionado.opcoesSelecionadas.push({
+                        nome: optionName,
+                        preco: optionPrice
+                    });
+                }
+            });
+            
+            // Atualizar mensagem de aviso
+            const materialWarning = document.getElementById('materialWarning');
+            if (materialWarning) {
+                materialWarning.style.display = materialSelecionado.opcoesSelecionadas.length === 0 ? 'block' : 'none';
             }
-
-            atualizarOpcoesAcabamento();
         }
 
         function validarCampos() {
@@ -826,6 +1029,15 @@
             const acabamento = document.querySelector('input[name="acabamento"]:checked');
             const arte = document.querySelector('input[name="arte"]:checked');
             const prazoProducao = document.querySelector('input[name="prazo_producao"]:checked');
+
+            // Verificar se há opções de material e se pelo menos uma foi selecionada
+            const materialOptionsContainer = document.getElementById('materialOptionsContainer');
+            if (materialOptionsContainer.style.display === 'block') {
+                if (materialSelecionado.opcoesSelecionadas.length === 0) {
+                    alert('Por favor, selecione pelo menos uma opção de material.');
+                    return false;
+                }
+            }
 
             return quantidade && largura && altura && acabamento && arte && prazoProducao;
         }
@@ -900,20 +1112,17 @@
 
         function calcularValor() {
             if (!validarCampos()) {
-                alert('Por favor, preencha todos os campos corretamente.');
                 return;
             }
 
             let quantidade = parseFloat(document.getElementById('quantidade').value);
             let larguraDigitada = parseFloat(document.getElementById('largura').value);
             const alturaDigitada = parseFloat(document.getElementById('altura').value);
-            const precoM2 = materialSelecionado.valor;
             const acabamento = document.querySelector('input[name="acabamento"]:checked').value;
             const prazoProducao = document.querySelector('input[name="prazo_producao"]:checked').value;
             const arte = document.querySelector('input[name="arte"]:checked').value;
             const valorArte = parseFloat(document.getElementById('valor_arte').value) || 0;
-            let valorAcabamento = 0;
-
+            
             const materialConfig = config.materials.find(m => m.name === materialSelecionado.nome);
             let larguraMaxima = materialConfig ? materialConfig.maxWidth : Infinity;
 
@@ -934,38 +1143,72 @@
                 document.getElementById('quantidade').value = quantidadeAjustada;
             }
 
-            if (acabamento === 'recorte') {
-                valorAcabamento = 0;
-                if (materialSelecionado.nome === 'Vinil m²' || materialSelecionado.nome === 'Adesivo de Vinil Transparente') {
-                    valorAcabamento = (quantidadeAjustada * (larguraCalculo * alturaCalculo * precoM2)) * config.finishing.recorte;
-                }
-            } else if (acabamento === 'ilhós') {
-                const quantidadeIlhos = parseInt(document.getElementById('quantidade_ilhos').value) || 0;
-                valorAcabamento = quantidadeIlhos * config.finishing.ilhos;
-            } else if (acabamento === 'bastao_corda') {
-                valorAcabamento = config.finishing.bastaoCorda;
+            // Verificar se há opções selecionadas
+            if (materialSelecionado.opcoesSelecionadas.length === 0) {
+                alert('Por favor, selecione pelo menos uma opção de material.');
+                return;
             }
 
-            const areaTotal = larguraCalculo * alturaCalculo;
-            let valorBase = quantidadeAjustada * (areaTotal * precoM2);
-            let valorTotal = valorBase + (valorAcabamento * quantidadeAjustada);
+            // Lógica para verificar combinações Padrão + UV
+            const temLonaPadrao = materialSelecionado.opcoesSelecionadas.some(o => o.nome === 'Lona Padrão');
+            const temLonaUV = materialSelecionado.opcoesSelecionadas.some(o => o.nome === 'Lona com proteção UV');
+            const temVinilPadrao = materialSelecionado.opcoesSelecionadas.some(o => o.nome === 'Vinil Padrão');
+            const temVinilUV = materialSelecionado.opcoesSelecionadas.some(o => o.nome === 'Vinil com proteção UV');
+
+            const esconderTotal = (temLonaPadrao && temLonaUV) || (temVinilPadrao && temVinilUV);
+
+            // Calcular valores para cada opção selecionada
+            let resultados = [];
+            let valorTotalGeral = 0;
             let mensagemValorMinimo = '';
+            let observacaoEspecial = '';
 
-            const minValue = materialConfig ? materialConfig.minValue : 0;
-            if (valorTotal < minValue) {
-                if (material && material.blockQuantity) {
-                    valorTotal = minValue;
-                    mensagemValorMinimo = `Observações: O valor mínimo para este material é R$ ${minValue.toFixed(2)}.`;
-                } else {
-                    quantidadeAjustada = Math.ceil(minValue / (areaTotal * precoM2 + valorAcabamento));
-                    valorTotal = quantidadeAjustada * (areaTotal * precoM2 + valorAcabamento);
-                    mensagemValorMinimo = `Observações: O valor mínimo para este material é R$ ${minValue.toFixed(2)}. A quantidade foi ajustada para ${quantidadeAjustada}.`;
+            if (temLonaPadrao && temLonaUV) observacaoEspecial = "<br>_Lona Padrão, indicada para usos internos ou externos de forma temporária. Lona UV com Proteção indicada para usos internos ou externos de longa duração._";
+            if (temVinilPadrao && temVinilUV) observacaoEspecial = "_Vinil padrão, indicado para usos internos ou externos de forma temporária. Vinil UV Indicado para usos internos e externos de longa duração._";
+
+            materialSelecionado.opcoesSelecionadas.forEach(opcao => {
+                let valorAcabamento = 0;
+                
+                if (acabamento === 'recorte') {
+                    valorAcabamento = 0;
+                    if (materialSelecionado.nome === 'Vinil m²' || materialSelecionado.nome === 'Adesivo de Vinil Transparente') {
+                        valorAcabamento = (quantidadeAjustada * (larguraCalculo * alturaCalculo * opcao.preco)) * config.finishing.recorte;
+                    }
+                } else if (acabamento === 'ilhós') {
+                    const quantidadeIlhos = parseInt(document.getElementById('quantidade_ilhos').value) || 0;
+                    valorAcabamento = quantidadeIlhos * config.finishing.ilhos;
+                } else if (acabamento === 'bastao_corda') {
+                    valorAcabamento = config.finishing.bastaoCorda;
                 }
-                alert(mensagemValorMinimo);
-            }
 
+                const areaTotal = larguraCalculo * alturaCalculo;
+                let valorBase = quantidadeAjustada * (areaTotal * opcao.preco);
+                let valorTotal = valorBase + (valorAcabamento * quantidadeAjustada);
+
+                // Aplicar valor mínimo por opção individual
+                const minValue = materialConfig ? materialConfig.minValue : 0;
+                if (valorTotal < minValue) {
+                    if (material && material.blockQuantity) {
+                        valorTotal = minValue;
+                        mensagemValorMinimo = `Observações: O valor mínimo para este material é R$ ${minValue.toFixed(2)} por opção.`;
+                    } else {
+                        quantidadeAjustada = Math.ceil(minValue / (areaTotal * opcao.preco + valorAcabamento));
+                        valorTotal = quantidadeAjustada * (areaTotal * opcao.preco + valorAcabamento);
+                        mensagemValorMinimo = `Observações: O valor mínimo para este material é R$ ${minValue.toFixed(2)} por opção. A quantidade foi ajustada para ${quantidadeAjustada}.`;
+                    }
+                }
+
+                resultados.push({
+                    nome: opcao.nome,
+                    valor: valorTotal
+                });
+                
+                valorTotalGeral += valorTotal;
+            });
+
+            // Adicionar valor da arte se necessário
             if (arte === 'criacao_arte' && valorArte >= config.general.arteMinValue) {
-                valorTotal += valorArte;
+                valorTotalGeral += valorArte;
             }
 
             const prazoTexto = prazoProducao === "1" ? "1 dia útil" : `${prazoProducao} dias úteis`;
@@ -980,22 +1223,63 @@
             const larguraFormatada = formatarDimensao(larguraDigitada);
             const alturaFormatada = formatarDimensao(alturaDigitada);
 
-            document.getElementById('resultado').innerHTML = `
+            // Construir HTML do resultado
+            let resultadoHTML = `
                 <strong>Orçamento:</strong><br><br>
                 <strong>Tamanho:</strong> ${larguraFormatada}x${alturaFormatada}cm<br>
                 <strong>Quantidade:</strong> ${quantidadeAjustada}<br>
                 <strong>Material:</strong> ${materialSelecionado.nome}<br>
+                <strong>Opções selecionadas:</strong><br>
+            `;
+
+            // Adicionar cada opção selecionada
+            resultados.forEach((resultado, index) => {
+                resultadoHTML += `&nbsp;&nbsp;• ${resultado.nome}<br>`;
+            });
+
+            resultadoHTML += `
                 <strong>Acabamento:</strong> ${getSelectedOptionText('acabamento')}<br>
                 ${acabamento === 'ilhós' ? '<strong>Quantidade de Ilhós:</strong> ' + (document.getElementById('quantidade_ilhos').value || 0) + '<br>' : ''}
                 <strong>Arte:</strong> ${getSelectedOptionText('arte')}<br>
                 <strong>Prazo de produção:</strong> ${prazoTexto}.<br>
-                <div class="valor-total">*Valor Total: R$ ${valorTotal.toFixed(2)} ✅*</div>
-                <br>
+            `;
+
+            // Se houver mais de uma opção, mostrar detalhamento
+            if (resultados.length > 1) {
+                resultadoHTML += `
+                <div class="multiple-total">
+                    <strong>Detalhamento dos valores:</strong><br>`;
+                
+                resultados.forEach((resultado, index) => {
+                    resultadoHTML += `
+                    <div class="multiple-total-item">
+                        <span>${resultado.nome}:</span>
+                        <span>R$ ${resultado.valor.toFixed(2)}</span>
+                    </div>`;
+                });
+                
+                resultadoHTML += `
+                </div>`;
+            }
+
+            // Exibir Valor Total SOMENTE se não for a combinação Padrão+UV
+            if (!esconderTotal) {
+                resultadoHTML += `<div class="valor-total">*Valor Total: R$ ${valorTotalGeral.toFixed(2)} ✅*</div><br>`;
+            }
+
+            // Adicionar observação especial se existir
+            if (observacaoEspecial) {
+                resultadoHTML += `<div class="observacoes"><strong>${observacaoEspecial}</strong></div>`;
+            }
+
+            resultadoHTML += `
                 ${mensagemValorMinimo ? `<div class="observacoes"><strong>${mensagemValorMinimo}</strong></div>` : ''}
                 <div class="observacoes">
                     ${informacoesAdicionais}
                 </div>
             `;
+
+            document.getElementById('resultado').innerHTML = resultadoHTML;
         }
 
         function copiarResultado(button) {
@@ -1042,10 +1326,26 @@
             config.materials.forEach((material, index) => {
                 const div = document.createElement('div');
                 div.className = 'material-category';
+                
+                let optionsHTML = '';
+                if (material.options && material.options.length > 0) {
+                    optionsHTML = `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd;">
+                        <strong>Opções:</strong><br>`;
+                    material.options.forEach((option, optIndex) => {
+                        optionsHTML += `
+                        <div class="material-item">
+                            <label>${option.name}:</label>
+                            <input type="number" step="0.01" min="0" value="${option.price.toFixed(2)}" 
+                                   onchange="updateMaterialOption(${index}, ${optIndex}, this.value)">
+                        </div>`;
+                    });
+                    optionsHTML += '</div>';
+                }
+                
                 div.innerHTML = `
                     <h3>${material.name} <button class="delete-btn" onclick="deleteMaterial(${index})">Excluir</button></h3>
                     <div class="material-item">
-                        <label>Preço por m² (R$):</label>
+                        <label>Preço base por m² (R$):</label>
                         <input type="number" step="0.01" min="0" value="${material.price.toFixed(2)}" onchange="updateMaterial(${index}, 'price', this.value)">
                     </div>
                     <div class="material-item">
@@ -1056,6 +1356,7 @@
                         <label>Largura Máx. (cm):</label>
                         <input type="number" min="0" value="${material.maxWidth === Infinity ? '' : material.maxWidth}" placeholder="Infinito" onchange="updateMaterial(${index}, 'maxWidth', this.value)">
                     </div>
+                    ${optionsHTML}
                     <div class="material-item">
                         <div class="checkbox-option-admin">
                             <input type="checkbox" id="active_${index}" ${material.active ? 'checked' : ''} onchange="updateMaterial(${index}, 'active', this.checked)">
@@ -1069,6 +1370,12 @@
                 `;
                 editor.appendChild(div);
             });
+        }
+
+        function updateMaterialOption(materialIndex, optionIndex, value) {
+            if (config.materials[materialIndex].options && config.materials[materialIndex].options[optionIndex]) {
+                config.materials[materialIndex].options[optionIndex].price = parseFloat(value) || 0;
+            }
         }
 
         function loadSettingsEditor() {
@@ -1133,10 +1440,4 @@
             hideAdminPanel();
         }
     </script>
-
-
 </body></html>
-
-
-
-
