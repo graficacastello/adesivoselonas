@@ -857,53 +857,77 @@
     </div>
     <script>
         const ADMIN_PASSWORD = "admin123";
-        const DEFAULT_CONFIG = {
-            materials: [
-                { name: 'Adesivo de Papel', price: 70, minValue: 20, maxWidth: 28, active: true, blockQuantity: false },
-                { name: 'Adesivo de Vinil Laser Brilho', price: 95, minValue: 20, maxWidth: 28, active: true, blockQuantity: false },
-                { name: 'Adesivo de Vinil Laser Fosco', price: 95, minValue: 20, maxWidth: 28, active: true, blockQuantity: false },
-                { name: 'Adesivo de Vinil Transparente', price: 120, minValue: 30, maxWidth: 28, active: true, blockQuantity: false },
-                { 
-                    name: 'Lona / Banner', 
-                    price: 65, 
-                    minValue: 40, 
-                    maxWidth: 138, 
-                    active: true, 
-                    blockQuantity: true,
-                    options: [
-                        { name: 'Lona Padrão', price: 65 },
-                        { name: 'Lona com proteção UV', price: 105 }
-                    ]
-                },
-                { 
-                    name: 'Vinil m²', 
-                    price: 80, 
-                    minValue: 35, 
-                    maxWidth: 130, 
-                    active: true, 
-                    blockQuantity: true,
-                    options: [
-                        { name: 'Vinil Padrão', price: 70 },
-                        { name: 'Vinil com proteção UV', price: 120 }
-                    ]
-                },
-                { name: 'Citru m²', price: 90, minValue: 65, maxWidth: 130, active: true, blockQuantity: true },
-                { name: 'Adesivo Jateado', price: 135, minValue: 65, maxWidth: 120, active: true, blockQuantity: true },
-                { name: 'Vinil Automotivo', price: 185, minValue: 65, maxWidth: 120, active: true, blockQuantity: true },
-                { name: 'Tecido Oxford', price: 75, minValue: 60, maxWidth: 140, active: true, blockQuantity: true },
-                { name: 'Outro 1', price: 100, minValue: 50, maxWidth: Infinity, active: true, blockQuantity: false },
-                { name: 'Outro 2', price: 150, minValue: 75, maxWidth: Infinity, active: true, blockQuantity: false },
-                { name: 'Outro 3', price: 200, minValue: 100, maxWidth: Infinity, active: true, blockQuantity: false }
-            ],
-            finishing: {
-                recorte: 0.003,
-                ilhos: 1.5,
-                bastaoCorda: 10
-            },
-            general: {
-                arteMinValue: 50
-            }
-        };
+const DEFAULT_CONFIG = {
+    materials: [
+        { name: 'Adesivo de Papel', price: 65, minValue: 15, maxWidth: 28, active: true, blockQuantity: false },
+        { name: 'Adesivo de Bopp Laminado', price: 105, minValue: 30, maxWidth: 28, active: true, blockQuantity: false },
+        { name: 'Adesivo Hotstamping/Metalizado', price: 210, minValue: 40, maxWidth: 28, active: true, blockQuantity: false },
+        { name: 'Adesivo de Vinil Transparente', price: 90, minValue: 30, maxWidth: 28, active: true, blockQuantity: false },
+        { 
+            name: 'Lona / Banner', 
+            price: 65, 
+            minValue: 40, 
+            maxWidth: 140, 
+            active: true, 
+            blockQuantity: true,
+            options: [
+                { name: 'Lona Padrão', price: 65 },
+                { name: 'Lona com proteção UV', price: 105 }
+            ]
+        },
+        { 
+            name: 'Vinil m²', 
+            price: 70, 
+            minValue: 20, 
+            maxWidth: 130, 
+            active: true, 
+            blockQuantity: false,
+            options: [
+                { name: 'Vinil Padrão', price: 70 },
+                { name: 'Vinil com proteção UV', price: 120 }
+            ]
+        },
+        { name: 'Citru m²', price: 90, minValue: 65, maxWidth: 130, active: true, blockQuantity: true },
+        { name: 'Adesivo Jateado', price: 135, minValue: 65, maxWidth: 120, active: true, blockQuantity: true },
+        { name: 'Vinil Automotivo', price: 185, minValue: 65, maxWidth: 120, active: true, blockQuantity: true },
+        { name: 'Tecido Oxford', price: 75, minValue: 50, maxWidth: 140, active: true, blockQuantity: true },
+        { 
+            name: 'Adesivo Vazado com máscara',
+            price: 70, 
+            minValue: 20, 
+            maxWidth: 130, 
+            active: true, 
+            blockQuantity: false,
+            options: [
+                { name: 'Branco', price: 75 },
+                { name: 'Colorido', price: 120 },
+                { name: 'Detalhado', price: 150 }
+            ]
+        },
+        { 
+            name: 'Placa PS Adesivada',
+            price: 150, 
+            minValue: 50, 
+            maxWidth: 130, 
+            active: true, 
+            blockQuantity: false,
+            options: [
+                { name: 'Chapa 3mm', price: 170 },
+                { name: 'Chapa 2mm', price: 150 },
+                { name: 'Detalhado', price: 100 }
+            ]
+        },
+        { name: 'Outro 3', price: 200, minValue: 100, maxWidth: Infinity, active: true, blockQuantity: false }
+    ],
+    finishing: {
+        recorte: 0.003,
+        ilhos: 1.5,
+        bastaoCorda: 10
+    },
+    general: {
+        arteMinValue: 50
+    }
+};
 
         let config = JSON.parse(localStorage.getItem('config')) || DEFAULT_CONFIG;
         let materialSelecionado = { 
