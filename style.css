@@ -19,3 +19,26 @@ header {
     display: block; /* Remove espaços extras abaixo da imagem */
     margin: 0 auto; /* Centraliza a logo horizontalmente */
 }
+
+body {
+    background:
+        radial-gradient(circle at top, rgba(242, 176, 70, 0.12), transparent 30%),
+        linear-gradient(135deg, #1A1A1D, #141414);
+}
+
+header {
+    background: rgba(255,255,255,0.96);
+    border-radius: 18px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 95, 0, 0.12);
+}
+
+.logo {
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.logo:hover {
+    transform: translateY(-2px) scale(1.01);
+    filter: saturate(1.04);
+}
